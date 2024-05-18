@@ -68,14 +68,23 @@ async function onSearchForm(event) {
     loaderEl.classList.add('is-hidden');
 };
 
-
+const smoothScrollOnLoadMore = () => {
+  const firstPhoto = galleryEl.querySelector('.gallery-container');
+  const photoHeight = firstPhoto.getBoundingClientRect().height;
+  const scrollHeight = photoHeight * 2;
+  window.scrollBy({
+    top: scrollHeight,
+    left: 0,
+    behavior: 'smooth',
+  });
+}
 
 const onLoadMore = async event => {
   try {
     currentPage += 1;
     const { data } = await fetchPhotoByQuery(searchQuery, currentPage);
     galleryEl.insertAdjacentHTML('beforeend', createGalleryMarkup(data.hits));
-   
+    smoothScrollOnLoadMore();
     if(currentPage > totalPages) {
       loadMoreBtnEl.classList.add('d-none');
       loadMoreBtnEl.removeEventListener('click', onLoadMore);
