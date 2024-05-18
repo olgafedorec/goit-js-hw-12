@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>goit-js-hw-11</title>
+    
+    
+    <script type="module" crossorigin src="/goit-js-hw-12/commonHelpers.js"></script>
+    <link rel="modulepreload" crossorigin href="/goit-js-hw-12/assets/vendor-eded45c0.js">
+    <link rel="stylesheet" href="/goit-js-hw-12/assets/vendor-4b066c51.css">
+    <link rel="stylesheet" href="/goit-js-hw-12/assets/index-f9d8468f.css">
+  </head>
+  <body>
+    <form class="search-form js-search-form" name="searchImageForm">
+      <div class="input-group mb-3">
+        <input
+          class="form-control js-search-input"
+          type="text"
+          name="searchKeyword"
+          placeholder="Search images..."
+        />
+        <button
+          class="btn btn-outline-success"
+          type="submit"
+          id="button-addon2"
+        >
+          Search photo
+        </button>
+      </div>
+    </form>
+    <section class="gallery">
+      <div class="container">
+        <div class="js-gallery"></div>
+        <span class="loader js-loader is-hidden"></span>
+      </div>
+      <div class="d-flex justify-content-center p-3">
+        <button
+          class="btn btn-primary text-light d-flex align-items-center d-none js-load-more"
+        >
+          <span
+            class="spinner-border spinner-border-sm js-loader d-none"
+            aria-hidden="true"
+          >
+          </span>
+          <span class="ms-1">Load more</span>
+        </button>
+      </div>
+     
+    </section>
+    
+  
+    
+  </body>
+</html>
