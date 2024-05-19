@@ -14,59 +14,60 @@ const loadMoreBtnEl = document.querySelector('.js-load-more');
 let searchQuery = '';
 let currentPage = 1;
 let totalPages = 0;
-
-
+let lightbox;
 
 async function onSearchForm(event) {
-    event.preventDefault();
+  event.preventDefault();
+  galleryEl.innerHTML = '';
+  loadMoreBtnEl.classList.add('d-none');
+  searchQuery = event.target.elements.searchKeyword.value.trim();
+  currentPage = 1; 
+  if (searchQuery.trim() === '') {
     galleryEl.innerHTML = '';
-    loadMoreBtnEl.classList.add('d-none');
-    searchQuery = event.target.elements.searchKeyword.value.trim();
-    if(searchQuery.trim() === '') {
-     galleryEl.innerHTML = '';
-     iziToast.show({
-        message: 'Input field can not be empty',
+    iziToast.show({
+      message: 'Input field can not be empty',
+      position: 'topCenter',
+      timeout: 2000,
+      color: 'red',
+    });
+    event.target.reset();
+    return;
+  }
+  loaderEl.classList.remove('is-hidden');
+  try {
+    const { data } = await fetchPhotoByQuery(searchQuery, currentPage);
+    if (data.total === 0) {
+      iziToast.show({
+        message: 'Sorry, there are no images matching your search query. Try again!',
         position: 'topCenter',
         timeout: 2000,
         color: 'red',
       });
-      event.target.reset();
+      loaderEl.classList.add('is-hidden');
       return;
     }
-  loaderEl.classList.remove('is-hidden');
-  try{
-     const { data } = await fetchPhotoByQuery(searchQuery, currentPage);
-     if (data.total === 0) {
-              iziToast.show({
-                message: 'Sorry, there are no images matching your search query. Try again!',
-                position: 'topCenter',
-                timeout: 2000,
-                color: 'red',
-              });
-              return;
-            }
-            galleryEl.insertAdjacentHTML('beforeend', createGalleryMarkup(data.hits)); 
-                const lightbox = new SimpleLightbox('.gallery a', {
-                    captionsData: 'alt',
-                    captionDelay: 250,
-                  });
-                  lightbox.refresh();
-                  
-                  totalPages = Math.ceil(data.totalHits / PER_PAGE);
-                  if(totalPages > 1) {
-                    loadMoreBtnEl.classList.remove('d-none');
-                  }                  
-    } catch (error) {
-      console.log(error);
-      iziToast.error({
-        message: 'Search params is not valid',
-        position: 'topRight',
-        timeout: 2000,
-      });
-    }
-    event.target.reset();
-    loaderEl.classList.add('is-hidden');
-};
+    galleryEl.insertAdjacentHTML('beforeend', createGalleryMarkup(data.hits)); 
+    lightbox = new SimpleLightbox('.gallery a', {
+      captionsData: 'alt',
+      captionDelay: 250,
+    });
+    lightbox.refresh();
+    
+    totalPages = Math.ceil(data.totalHits / PER_PAGE);
+    if (totalPages > 1) {
+      loadMoreBtnEl.classList.remove('d-none');
+    }                  
+  } catch (error) {
+    console.log(error);
+    iziToast.error({
+      message: 'Search params are not valid',
+      position: 'topRight',
+      timeout: 2000,
+    });
+  }
+  event.target.reset();
+  loaderEl.classList.add('is-hidden');
+}
 
 const smoothScrollOnLoadMore = () => {
   const firstPhoto = galleryEl.querySelector('.gallery-container');
@@ -84,24 +85,23 @@ const onLoadMore = async event => {
     currentPage += 1;
     const { data } = await fetchPhotoByQuery(searchQuery, currentPage);
     galleryEl.insertAdjacentHTML('beforeend', createGalleryMarkup(data.hits));
+    lightbox.refresh(); 
     smoothScrollOnLoadMore();
-    if(currentPage > totalPages) {
+    if (currentPage >= totalPages) {
       loadMoreBtnEl.classList.add('d-none');
       loadMoreBtnEl.removeEventListener('click', onLoadMore);
     }
   } catch {
     iziToast.show({
-      message: 'Search params is not valid',
+      message: 'Search params are not valid',
       position: 'topCenter',
       timeout: 2000,
       color: 'red',
     });
   }
- 
-};
+}
 
 searchFormEl.addEventListener('submit', onSearchForm);
-
 loadMoreBtnEl.addEventListener('click', onLoadMore);
 
    
